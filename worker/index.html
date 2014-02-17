@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Worker</title>
+</head>
+
+<body>
+    <p>计数：
+        <output id="result"></output>
+    </p>
+    <script type="text/javascript">
+    if (typeof(Worker) !== "undefined") {
+        var worker = new Worker('worker.js');
+        worker.onmessage = function(event) {
+            var data = event.data;
+            // 对数据进行处理
+            document.getElementById("result").innerHTML = data;
+        };
+    } else {
+        alert('sorry, 不支持worker!');
+    }
+    </script>
+</body>
+
+</html>
