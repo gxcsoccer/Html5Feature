@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Geolocation</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.css" />
+    <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.ie.css" />
+ 	<![endif]-->
+    <script src="http://cdn.leafletjs.com/leaflet-0.6.4/leaflet.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <style type="text/css">
+    #map {
+        height: 480px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script type="text/javascript">
+    var tinyIcon = L.Icon.extend({
+        options: {
+            shadowUrl: 'http://leafletjs.com/dist/images/marker-shadow.png',
+            iconSize: [25, 39],
+            iconAnchor: [12, 36],
+            shadowSize: [41, 41],
+            shadowAnchor: [12, 38],
+            popupAnchor: [0, -30]
+        }
+    });
+    var redIcon = new tinyIcon({
+        iconUrl: 'http://leafletjs.com/dist/images/marker-icon-2x.png'
+    });
+
+
+    /**
+     * 浏览器是否支持 geolocation api
+     * @return Boolean
+     */
+
+    function isSupportGeo() {
+        var isSupport = false;
+        if (navigator.geolocation) {
+            isSupport = true;
+        } else {
+            isSupport = false;
+            console.log('浏览器不支持geolocation');
+        }
+        return isSupport;
+    }
+
+    //获取用户当前位置
+    if (isSupportGeo()) {
+        navigator.geolocation.getCurrentPosition(positionSuccess, positionError, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: Infinity
+        });
+    } else {
+        $('#map').text('Your browser is out of fashion, there\'s no geolocation!');
+    }
+
+    /**
+     * 获取地理信息成功后执行的回调函数
+     * @param position 位置信息
+     */
+
+    function positionSuccess(position) {
+        //纬度
+        var lat = position.coords.latitude;
+        //经度
+        var lng = position.coords.longitude;
+        //以米为单位的经度和纬度的精确度
+        var acr = position.coords.accuracy;
+
+        var map = L.map('map', {
+            center: [lat, lng], //[51.505, -0.09],
+            zoom: 15
+        });
+
+        var userMarker = L.marker([lat, lng], {
+            icon: redIcon
+        });
+
+
+        L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            detectRetina: true
+        }).addTo(map);
+
+        //map.fitWorld();
+
+        userMarker.addTo(map);
+        userMarker.bindPopup('你在这里，你的id是 ' + ~~(Math.random() * 1000)).openPopup();
+    }
+
+    function positionError(e) {
+        console.error(e);
+    }
+    </script>
+</body>
+
+</html>

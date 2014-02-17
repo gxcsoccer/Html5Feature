@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>fibonacci</title>
+</head>
+
+<body>
+    <p>输入：
+        <input id="input" type="text" />
+    </p>
+    <p>结果：
+        <output id="result"></output>
+    </p>
+    <select>
+        <option>a</option>
+        <option>b</option>
+        <option>c</option>
+    </select>
+    <script type="text/javascript">
+    if (typeof(Worker) !== "undefined") {
+        var worker = new Worker('fib.js'),
+            input = document.getElementById("input");
+
+        input.addEventListener('blur', function() {
+            worker.postMessage({
+                input: +input.value
+            });
+        }, false);
+
+        worker.onmessage = function(event) {
+            var data = event.data;
+            // 对数据进行处理
+            document.getElementById("result").innerHTML = data;
+        };
+
+        worker.onerror = function(e) {
+            alert("ERROR: " + event.filename + " (" + event.lineno + "): " + event.message);
+        };
+    } else {
+        alert('sorry, 不支持worker!');
+    }
+    </script>
+</body>
+
+</html>

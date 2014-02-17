@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Worker</title>
+</head>
+
+<body>
+    <p>输入：
+        <input id="input" type="text" />
+    </p>
+    <p>结果：
+        <output id="result"></output>
+    </p>
+    <select>
+        <option>a</option>
+        <option>b</option>
+        <option>c</option>
+    </select>
+    <script type="text/javascript">
+    var input = document.getElementById("input");
+
+    input.addEventListener('blur', function() {
+        document.getElementById("result").innerHTML = fibonacci(+input.value);
+    }, false);
+
+    function fibonacci(n) {
+        return (function(n) {
+            if (n == 1 || n == 2)
+                return 1;
+            return arguments.callee(n - 1) + arguments.callee(n - 2);
+        })(n);
+    }
+    </script>
+</body>
+
+</html>
