@@ -1,16 +1,39 @@
 var express = require('express'),
+  http = require('http'),
   app = express(),
-  path = require('path'),
-  fs = require('fs'),
+  server = http.createServer(app),
+  io = require('socket.io').listen(server),
   maxAge = 10368000;
 
-app.use(express.compress({
-  threshold: false
-}));
+// app.use(express.compress({
+//   threshold: false
+// }));
 app.use(express.logger());
-app.use(express.static(__dirname + '/public', {
-  maxAge: maxAge
-}));
-// app.use(express.static(__dirname + '/public'));
+// app.use(express.static(__dirname + '/public', {
+//   maxAge: maxAge
+// }));
+app.use(express.static(__dirname + '/public'));
 
-app.listen(8000);
+server.listen(8000);
+
+var count = 0;
+
+io.sockets.on('connection', function(socket) {
+  count++;
+
+  io.sockets.emit('new', {
+    id: socket.id,
+    count: count
+  });
+  // socket.broadcast.emit('online', {
+  //   id: socket.id
+  // });
+
+  socket.on('disconnect', function() {
+    count--;
+    io.sockets.emit('offline', {
+      id: socket.id,
+      count: count
+    });
+  });
+});
