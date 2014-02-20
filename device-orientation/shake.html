@@ -57,8 +57,6 @@ var x, y, z, last_x, last_y, last_z;
 var hand = document.getElementById('hand');
 var sound = document.getElementById('sound');
 
-alert(sound.canPlayType('audio/mpeg; codecs="mp3"'));
-
 function deviceMotionHandler(eventData) {
     // Grab the acceleration including gravity from the results
     var acceleration = eventData.accelerationIncludingGravity;
