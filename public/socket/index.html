@@ -5,14 +5,71 @@
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="maximum-scale=1.0,width=device-width,initial-scale=1.0,user-scalable=0">
     <title>client</title>
     <script type="text/javascript" src="js/socket.io.js"></script>
+    <style type="text/css">
+    body {
+        margin: 0;
+        /*position: relative;*/
+        z-index: 0;
+        background: #f0f0f0;
+        background-size: cover;
+        overflow: hidden;
+        overflow-y: visible;
+        background-color: rgb(35, 113, 159);
+    }
+    #note {
+        position: fixed;
+        top: 0px;
+        right: 10px;
+        font-size: 12px;
+        z-index: 100;
+    }
+    #todo-list {
+        background:#dbdbdb;
+        width: 280px;
+        margin: 30px auto;
+        border-radius: 3px;
+        padding: 10px;
+    }
+    #todo-list > div {
+        background: rgb(232, 212, 176);
+        border-radius: 3px;
+        padding: 6px 8px 4px;
+        position: relative;
+        font-family:'Helvetica Neue', Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        font-style: normal;
+        font-variant: normal;
+        font-weight: normal;
+        color: rgb(57, 57, 57);
+        margin: 5px 0;
+    }
+    #todo-list > div.self {
+        text-align: right;
+    }
+    #control-panel {
+        position: fixed;
+        bottom: 10px;
+        left: 0;
+        padding: 10px;
+    }
+    </style>
 </head>
 
 <body>
-    <p>当前在线人数：
+    <p id="note">当前在线人数：
         <output id="count"></output>
     </p>
+
+    <div id="todo-list">
+    </div>
+
+    <div id="control-panel">
+        <input id="input" type="text" style="width: 200px;" />
+        <button id="send">发送</button>
+    </div>
 </body>
 <script type="text/javascript">
 var url = window.location.origin;
@@ -20,20 +77,43 @@ var socket = io.connect(url);
 
 socket.on('connect', function() {
     console.log('connected');
+    printMessage('connected');
 });
 
 socket.on('new', function(data) {
     console.log(data.id + ' join');
-    console.log(data);
+    printMessage('new user "' + data.id + '" joined');
     printCount(data.count);
 });
 
 socket.on('offline', function(data) {
     console.log(data.id + ' is offline');
+    printMessage(ata.id + ' is offline');
+});
+
+socket.on('message', function(msg) {
+    printMessage(msg);
+});
+
+document.getElementById('send').addEventListener('click', function() {
+    var msg = document.getElementById('input').value;
+    if (msg != '') {
+        socket.send(msg);
+        printMessage(msg, 'self');
+        document.getElementById('input').value = '';
+    }
 });
 
 function printCount(count) {
     document.getElementById('count').innerHTML = count;
+}
+
+function printMessage(message, type) {
+    type = type || '';
+    var div = document.createElement('div');
+    div.innerHTML = '<span>' + message + '</span>';
+    div.className = type;
+    document.getElementById('todo-list').appendChild(div);
 }
 </script>
 
